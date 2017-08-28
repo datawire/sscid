@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euxo pipefail
+set -uo pipefail
 
 # Project config
 PROJECT_NAME="datawire/sscid"
@@ -12,11 +12,18 @@ SCRIPT=test.sh
 SSCID_WORKSPACE=${HOME}/sscid
 PROJECT_WORKSPACE=${SSCID_WORKSPACE}/${PROJECT_NAME}
 
-mkdir -p ${PROJECT_WORKSPACE}/results
+cleanup() {
+  printf "Performing cleanup...\n"
+  rm -rf ${PROJECT_WORKSPACE}/latest
+}
+
+trap cleanup 1
+
+mkdir -p ${PROJECT_WORKSPACE}
 cd ${PROJECT_WORKSPACE}
 
 if [ -d "./latest" ]; then
-  printf "Run in progress; Not continuing"
+  printf "Run in progress; Not continuing\n"
   exit 0
 fi
 
@@ -27,17 +34,21 @@ git checkout ${BRANCH}
 GIT_COMMIT=$(git rev-parse HEAD)
 
 # execute the build script and shit the output to a file
-set +e
+set +ex
 ./${SCRIPT} > sscid.log
+echo "$?" > sscid.result
 set -e
 
-echo "$?" > sscid.result
-
-cp -R . ${PROJECT_WORKSPACE}/${GIT_COMMIT}
+rm -rf ${PROJECT_WORKSPACE}/${GIT_COMMIT}/.git
+cp -R  ${PROJECT_WORKSPACE}/latest ${PROJECT_WORKSPACE}/${GIT_COMMIT}
 rm -rf ${PROJECT_WORKSPACE}/latest
 
 # Upload log to S3
 
 cd ${PROJECT_WORKSPACE}
-aws s3 sync . s3://sscid --exclude "*latest/*" --include "*/sscid.result" --include "*/sscid.log"
+aws s3 sync . s3://sscid \
+    --exclude "*latest/*" \
+    --exclude "*" \
+    --include "*/sscid.result" \
+    --include "*/sscid.log"
 
