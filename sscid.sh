@@ -27,7 +27,9 @@ git checkout ${BRANCH}
 GIT_COMMIT=$(git rev-parse HEAD)
 
 # execute the build script and shit the output to a file
+set +e
 ./${SCRIPT} > sscid.log
+set -e
 
 echo "$?" > sscid.result
 
