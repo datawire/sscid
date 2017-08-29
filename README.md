@@ -4,7 +4,7 @@ For running CI tests on our local macOS laptop.
 
 # Setup!
 
-1. Ensure the AWS CLI is installed: `pip install awscli` and that AWS credentials are installed for S3 upload.
+1. Ensure the AWS CLI is installed: `pip install awscli --ignore-installed six` and that AWS credentials are installed for S3 upload. See https://github.com/pypa/pip/issues/3165.
 2. Install the script somewhere
 
     ```bash
