@@ -2,4 +2,4 @@
 set -euxo pipefail
 
 echo "I am the walrus"
-exit 0
+exit 1
