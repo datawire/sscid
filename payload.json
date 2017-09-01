@@ -1,0 +1,7 @@
+{
+  "repo_slug": "datawire/sscid",
+  "branch": "master",
+  "commit": "ea2d011158ce3f690322870db87b5b8639ecb1a6",
+  "is_pull_request": false,
+  "build_script": "test.sh"
+}
