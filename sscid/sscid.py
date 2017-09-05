@@ -19,7 +19,7 @@ app = Flask(__name__)
 app.logger.addHandler(logging.StreamHandler(sys.stdout))
 app.logger.setLevel(logging.DEBUG)
 
-s3 = boto3.client('s3')
+s3 = boto3.client("s3")
 
 
 def run(on_exit_fn, *args, **kwargs):
@@ -118,7 +118,11 @@ def health():
 
 
 def main():
-    app.run(debug=False)
+    import sys
 
-if __name__ == "__main__":
-    main()
+    port = 5000
+    if len(sys.argv[1:]) >= 1:
+        port = int(sys.argv[1])
+
+    app.run(debug=False, port=port)
+

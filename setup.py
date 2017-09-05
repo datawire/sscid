@@ -9,8 +9,14 @@ setup(
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
     install_requires=[
-        "flask"
+        "boto3",
+        "flask",
+        "GitPython"
     ],
+    entry_points="""
+        [console_scripts]
+        sscid=sscid.sscid:main
+    """,
     author="datawire.io",
     author_email="dev@datawire.io",
     url="https://github.com/datawire/sscid",
