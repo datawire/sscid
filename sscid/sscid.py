@@ -92,6 +92,7 @@ def build():
         str(build_ws / build_script),
         cwd=str(build_ws),
         close_fds=True,
+        shell=True,
         preexec_fn=os.setpgrp)
 
     return "", 204
