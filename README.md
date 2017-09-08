@@ -7,7 +7,7 @@ For running CI tests on our local macOS laptop because Travis CI is too slow for
 SSCID requires Python 3 so make sure Python 3 is installed then:
 
 ```bash
-pip3 install -U git+git://github.com/datawire/scout2csv.git
+pip3 install -U git+git://github.com/datawire/sscid.git
 ```
 
 ## Start the SSCID server...
