@@ -1,11 +1,34 @@
 #!/usr/bin/env bash
 set -eEux
 
+function post_to_slack () {
+  # format message as a code block ```${msg}```
+  SLACK_MESSAGE="\`\`\`$1\`\`\`"
+  SLACK_URL=https://hooks.slack.com/services/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
+ 
+  case "$2" in
+    INFO)
+      SLACK_ICON=':slack:'
+      ;;
+    WARNING)
+      SLACK_ICON=':warning:'
+      ;;
+    ERROR)
+      SLACK_ICON=':bangbang:'
+      ;;
+    *)
+      SLACK_ICON=':slack:'
+      ;;
+  esac
+ 
+  curl -X POST --data "payload={\"text\": \"${SLACK_ICON} ${SLACK_MESSAGE}\"}" ${SLACK_URL}
+}
+
 # Project config
 PROJECT_NAME="datawire/telepresence"
 GIT_URL="https://github.com/${PROJECT_NAME}.git"
 
-BRANCH=master
+BRANCH=ci-mac
 SCRIPT=build-macosx.sh
 
 # SSCID config and setup
@@ -17,6 +40,7 @@ rm -rf $HOME/tpbin
 
 cleanup() {
   printf "Performing cleanup...\n"
+  post_to_slack "Uh oh, Mac OS X build of Telepresence failed!" "WARNING"
 #  rm -rf ${PROJECT_WORKSPACE}/latest
 }
 
@@ -46,7 +70,6 @@ set -eE
 mkdir -p ${PROJECT_WORKSPACE}/${GIT_COMMIT}
 cp -R  ${PROJECT_WORKSPACE}/latest/* ${PROJECT_WORKSPACE}/${GIT_COMMIT}
 # rm -rf ${PROJECT_WORKSPACE}/latest
-
 
 # Upload log to S3
 
