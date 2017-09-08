@@ -6,6 +6,7 @@ import subprocess
 import sys
 import threading
 import boto3
+import os
 
 from flask import Flask, request, jsonify
 from git import Repo
@@ -31,10 +32,15 @@ def run(on_exit_fn, *args, **kwargs):
     argument. on_exit_fn is a callable object, and *args and **kwargs are simply passed up to subprocess.Popen.
     """
     def run_in_thread(on_exit, popen_args, popen_kwargs):
-        proc = subprocess.Popen(*popen_args, **popen_kwargs)
-        result_code = proc.wait()
-        on_exit(result_code, popen_kwargs.get("cwd"))
-        return
+        build_output = Path(popen_kwargs.get("cwd")) / ".sscid" / "build.out"
+
+        with build_output.open("wb+") as out:
+            popen_kwargs["stdout"] = out
+            popen_kwargs["stderr"] = subprocess.STDOUT
+
+            proc = subprocess.Popen(*popen_args, **popen_kwargs)
+            result_code = proc.wait()
+            on_exit(result_code, popen_kwargs.get("cwd"))
 
     thread = threading.Thread(target=run_in_thread, args=(on_exit_fn, args, kwargs))
     thread.start()
@@ -82,14 +88,12 @@ def build():
     sscid_outputs = build_ws / ".sscid"
     sscid_outputs.mkdir(parents=True, exist_ok=True)
 
-    build_output = build_ws / ".sscid" / "build.out"
-
-    with build_output.open("wb+") as out:
-        run(on_build_finished,
-            str(build_ws / build_script),
-            cwd=str(build_ws),
-            stdout=out,
-            stderr=subprocess.STDOUT)
+    run(on_build_finished,
+        str(build_ws / build_script),
+        cwd=str(build_ws),
+        close_fds=True,
+        shell=True,
+        preexec_fn=os.setpgrp)
 
     return "", 204
 
