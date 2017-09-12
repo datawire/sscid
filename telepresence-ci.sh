@@ -28,7 +28,7 @@ function post_to_slack () {
 PROJECT_NAME="datawire/telepresence"
 GIT_URL="https://github.com/${PROJECT_NAME}.git"
 
-BRANCH=ci-mac
+BRANCH=master
 SCRIPT=build-macosx.sh
 
 # SSCID config and setup
@@ -41,7 +41,7 @@ rm -rf $HOME/tpbin
 cleanup() {
   printf "Performing cleanup...\n"
   post_to_slack "Uh oh, Mac OS X build of Telepresence failed!" "WARNING"
-#  rm -rf ${PROJECT_WORKSPACE}/latest
+  rm -rf ${PROJECT_WORKSPACE}/latest
 }
 
 trap cleanup ERR
@@ -69,7 +69,7 @@ set -eE
 
 mkdir -p ${PROJECT_WORKSPACE}/${GIT_COMMIT}
 cp -R  ${PROJECT_WORKSPACE}/latest/* ${PROJECT_WORKSPACE}/${GIT_COMMIT}
-# rm -rf ${PROJECT_WORKSPACE}/latest
+rm -rf ${PROJECT_WORKSPACE}/latest
 
 # Upload log to S3
 
